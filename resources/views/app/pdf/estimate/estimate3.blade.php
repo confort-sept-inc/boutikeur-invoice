@@ -344,7 +344,6 @@
         .pl-0 {
             padding-left: 0;
         }
-
     </style>
 </head>
 
@@ -354,7 +353,7 @@
             <tr>
                 <td width="50%" class="header-section-left">
                     @if ($logo)
-                        <img class="header-logo" style="height: 50px;" src="{{ $logo }}" alt="Company Logo">
+                        <img class="header-logo" style="height: 70px;" src="{{ $logo }}" alt="Company Logo">
                     @else
                         <h1 class="header-logo"> {{ $estimate->customer->company->name }} </h1>
                     @endif
@@ -378,7 +377,8 @@
                     @endif
                 </div>
 
-                <div @if ($estimate->customer->billingaddress) class="shipping-address-container shipping-address" @else class="shipping-address-container--left shipping-address" @endif>
+                <div
+                    @if ($estimate->customer->billingaddress) class="shipping-address-container shipping-address" @else class="shipping-address-container--left shipping-address" @endif>
                     @if ($shipping_address)
                         <b>@lang('pdf_ship_to')</b> <br>
                         {!! $shipping_address !!}

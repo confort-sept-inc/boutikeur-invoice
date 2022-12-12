@@ -74,7 +74,7 @@
             padding-top: 15px;
             float: left;
             padding-left: 30px;
-            width: 30%;
+            width: 34%;
             text-transform: capitalize;
             margin-bottom: 2px;
         }
@@ -384,7 +384,6 @@
         .pl-0 {
             padding-left: 0;
         }
-
     </style>
 </head>
 
@@ -442,7 +441,8 @@
             @endif
 
 
-            <div @if ($billing_address !== '</br>') class="shipping-address-container shipping-address" @else class="shipping-address-container--left shipping-address" style="padding-left:30px;" @endif>
+            <div
+                @if ($billing_address !== '</br>') class="shipping-address-container shipping-address" @else class="shipping-address-container--left shipping-address" style="padding-left:30px;" @endif>
 
                 @if ($shipping_address)
                     <b>@lang('pdf_ship_to') </b> <br>

@@ -6,6 +6,7 @@ namespace Pest;
 
 use BadMethodCallException;
 use Closure;
+use Error;
 use InvalidArgumentException;
 use Pest\Concerns\Extendable;
 use Pest\Concerns\RetrievesValues;
@@ -722,7 +723,7 @@ final class Expectation
         try {
             Assert::assertTrue(Arr::has($array, $key));
 
-            /* @phpstan-ignore-next-line  */
+            /* @phpstan-ignore-next-line */
         } catch (ExpectationFailedException $exception) {
             throw new ExpectationFailedException("Failed asserting that an array has the key '$key'", $exception->getComparisonFailure());
         }
@@ -911,8 +912,12 @@ final class Expectation
 
         try {
             ($this->value)();
-        } catch (Throwable $e) { // @phpstan-ignore-line
+        } catch (Throwable $e) {
             if (!class_exists($exception)) {
+                if ($e instanceof Error && (bool) preg_match("/Class [\"']{$exception}[\"'] not found/", $e->getMessage())) {
+                    throw $e;
+                }
+
                 Assert::assertStringContainsString($exception, $e->getMessage());
 
                 return $this;

@@ -40,5 +40,6 @@
             "*.sln": true,
             "*.suo": true
         },
+        "git.ignoreLimitWarning": true,
     }
 }

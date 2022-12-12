@@ -28,7 +28,7 @@
         /* -- Header -- */
 
         .header-container {
-            background: #817AE3;
+            background: #000000;
             position: absolute;
             width: 100%;
             height: 141px;
@@ -406,7 +406,6 @@
         .pl-0 {
             padding-left: 0;
         }
-
     </style>
 </head>
 
@@ -449,7 +448,8 @@
                 </div>
             @endif
 
-            <div class="billing-address-container billing-address" @if ($shipping_address === '</br>') style="float:right; margin-right:30px;" @endif>
+            <div class="billing-address-container billing-address"
+                @if ($shipping_address === '</br>') style="float:right; margin-right:30px;" @endif>
                 @if ($billing_address)
                     <b>@lang('pdf_bill_to')</b> <br>
                     {!! $billing_address !!}

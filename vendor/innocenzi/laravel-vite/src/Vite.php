@@ -6,6 +6,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\HtmlString;
@@ -125,7 +126,7 @@ class Vite
         }
 
         return $this->getEntries()->first(fn (Htmlable $entry) => Str::contains($entry->toHtml(), $name))
-            ?? $this->createDevelopmentScriptTag($name);
+            ?? $this->createDevelopmentTag($name);
     }
 
     /**
@@ -138,7 +139,7 @@ class Vite
         }
 
         return $this->findEntrypoints()
-            ->map(fn (\SplFileInfo $file) => $this->createDevelopmentScriptTag(
+            ->map(fn (\SplFileInfo $file) => $this->createDevelopmentTag(
                 Str::of($file->getPathname())
                     ->replace(base_path(), '')
                     ->replace('\\', '/')
@@ -205,7 +206,7 @@ class Vite
             return false;
         }
 
-        if (! App::environment('local')) {
+        if (! App::environment(['local', 'testing'])) {
             return true;
         }
 
@@ -225,19 +226,46 @@ class Vite
      */
     public function isDevelopmentServerRunning(): bool
     {
-        try {
-            ['host' => $hostname, 'port' => $port] = parse_url(config('vite.ping_url') ?? config('vite.dev_url'));
-            $connection = @fsockopen($hostname, $port, $errno, $errstr, config('vite.ping_timeout'));
-
-            if (\is_resource($connection)) {
-                fclose($connection);
-
-                return true;
-            }
-        } catch (\Throwable $th) {
+        if (isset($this->isDevelopmentServerRunning)) {
+            return $this->isDevelopmentServerRunning;
         }
 
-        return false;
+        $url = config('vite.ping_url') ?? config('vite.dev_url');
+
+        try {
+            Http::withOptions(['verify' => false])->get($url);
+
+            return $this->isDevelopmentServerRunning = true;
+        } catch (\Throwable $e) {
+        }
+
+        return $this->isDevelopmentServerRunning = false;
+    }
+
+    /**
+     * Creates the tag for including the development server.
+     */
+    protected function createDevelopmentTag(string $path): Htmlable
+    {
+        if (Str::endsWith($path, '.css')) {
+            return $this->createDevelopmentLinkTag($path);
+        }
+
+        return $this->createDevelopmentScriptTag($path);
+    }
+
+    /**
+     * Creates the link tag for including the development server.
+     */
+    protected function createDevelopmentLinkTag(string $path): Htmlable
+    {
+        // I suspect ASSET_URL should be takin into account here.
+        // If you find out it does, feel free to open an issue.
+        return new HtmlString(sprintf(
+            '<link rel="stylesheet" href="%s%s" />',
+            Str::finish(config('vite.dev_url'), '/'),
+            $path
+        ));
     }
 
     /**

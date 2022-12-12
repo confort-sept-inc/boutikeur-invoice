@@ -14,9 +14,7 @@ use function count;
 use function max;
 use function usleep;
 
-/**
- * @internal
- */
+/** @internal */
 final class WrapperRunner extends BaseRunner
 {
     /** @var WrapperWorker[] */
@@ -27,7 +25,7 @@ final class WrapperRunner extends BaseRunner
         if ($this->options->functional()) {
             throw new InvalidArgumentException(
                 'The `functional` option is not supported yet in the WrapperRunner. Only full classes can be run due ' .
-                'to the current PHPUnit commands causing classloading issues.'
+                'to the current PHPUnit commands causing classloading issues.',
             );
         }
     }
@@ -36,7 +34,6 @@ final class WrapperRunner extends BaseRunner
     {
         $this->startWorkers();
         $this->assignAllPendingTests();
-        $this->sendStopMessages();
         $this->waitForAllToFinish();
     }
 
@@ -103,18 +100,17 @@ final class WrapperRunner extends BaseRunner
         $this->exitcode = max($this->exitcode, $exitCode);
     }
 
-    private function sendStopMessages(): void
-    {
-        foreach ($this->workers as $worker) {
-            $worker->stop();
-        }
-    }
-
     private function waitForAllToFinish(): void
     {
+        $stopped = [];
         while (count($this->workers) > 0) {
             foreach ($this->workers as $index => $worker) {
                 if ($worker->isRunning()) {
+                    if (! isset($stopped[$index]) && $worker->isFree()) {
+                        $worker->stop();
+                        $stopped[$index] = true;
+                    }
+
                     continue;
                 }
 

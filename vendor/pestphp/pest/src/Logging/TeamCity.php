@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Pest\Logging;
 
 use function getmypid;
+
 use Pest\Concerns\Logging\WritesToConsole;
 use Pest\Concerns\Testable;
 use Pest\Support\ExceptionTrace;
+
 use function Pest\version;
+
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestCase;
@@ -16,9 +19,11 @@ use PHPUnit\Framework\TestResult;
 use PHPUnit\Framework\TestSuite;
 use PHPUnit\Framework\Warning;
 use PHPUnit\TextUI\DefaultResultPrinter;
+
 use function round;
 use function str_replace;
 use function strlen;
+
 use Throwable;
 
 final class TeamCity extends DefaultResultPrinter
@@ -81,6 +86,7 @@ final class TeamCity extends DefaultResultPrinter
         foreach ($filteredResults as $key => $info) {
             $this->writeWithColor($info['color'], $info['count'] . " $key", false);
 
+            /* @phpstan-ignore-next-line */
             if ($key !== array_reverse(array_keys($filteredResults))[0]) {
                 $this->write(', ');
             }
@@ -106,7 +112,6 @@ final class TeamCity extends DefaultResultPrinter
             - $result->riskyCount();
     }
 
-    /** @phpstan-ignore-next-line */
     public function startTestSuite(TestSuite $suite): void
     {
         $suiteName = $suite->getName();
@@ -164,7 +169,6 @@ final class TeamCity extends DefaultResultPrinter
         );
     }
 
-    /** @phpstan-ignore-next-line */
     public function endTestSuite(TestSuite $suite): void
     {
         $suiteName = $suite->getName();

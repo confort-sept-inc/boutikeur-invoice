@@ -29,6 +29,26 @@ function assertDatabaseMissing(string $table, array $data, string $connection = 
 }
 
 /**
+ * Assert the given model exists in the database.
+ *
+ * @return TestCase
+ */
+function assertModelExists(Model $model)
+{
+    return test()->assertModelExists($model);
+}
+
+/**
+ * Assert the given model does not exist in the database.
+ *
+ * @return TestCase
+ */
+function assertModelMissing(Model $model)
+{
+    return test()->assertModelMissing($model);
+}
+
+/**
  * Assert the count of table entries.
  *
  * @return TestCase
@@ -60,6 +80,18 @@ function assertDeleted($table, array $data = [], string $connection = null)
 function assertSoftDeleted($table, array $data = [], string $connection = null, string $deletedAtColumn = 'deleted_at')
 {
     return test()->assertSoftDeleted(...func_get_args());
+}
+
+/**
+ * Assert the given record has not been "soft deleted".
+ *
+ * @param Model|string $table
+ *
+ * @return TestCase
+ */
+function assertNotSoftDeleted($table, array $data = [], string $connection = null, string $deletedAtColumn = 'deleted_at')
+{
+    return test()->assertNotSoftDeleted(...func_get_args());
 }
 
 /**
